@@ -1,0 +1,12 @@
+ticker,name,sector
+AAPL,Apple,Technology
+MSFT,Microsoft,Technology
+NVDA,NVIDIA,Technology
+AMZN,Amazon,Consumer Discretionary
+META,Meta Platforms,Communication Services
+GOOGL,Alphabet Class A,Communication Services
+AVGO,Broadcom,Technology
+COST,Costco,Consumer Staples
+NFLX,Netflix,Communication Services
+TSLA,Tesla,Consumer Discretionary
+QQQ,Invesco QQQ Trust,Benchmark
