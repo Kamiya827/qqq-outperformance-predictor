@@ -1,6 +1,7 @@
+from pathlib import Path
+
 import pandas as pd
 
-from src.config import settings
 from src.database.connection import get_connection
 
 
@@ -15,17 +16,10 @@ REQUIRED_COLUMNS = {
 }
 
 
-def load_validated_prices() -> int:
+def load_validated_prices(file_path: Path) -> int:
     """
     Load validated market price data from CSV into SQLite.
-
-    Returns
-    -------
-    int
-        Number of rows loaded into the validated_prices table.
     """
-
-    file_path = settings.project_root / "data" / "interim" / "daily_bars_validated.csv"
 
     if not file_path.exists():
         raise FileNotFoundError(f"Validated price file not found: {file_path}")
@@ -36,8 +30,7 @@ def load_validated_prices() -> int:
     if missing_columns:
         raise ValueError(f"Missing required columns: {missing_columns}")
 
-    optional_columns = ["trade_count", "vwap"]
-    for column in optional_columns:
+    for column in ["trade_count", "vwap"]:
         if column not in df.columns:
             df[column] = None
 
