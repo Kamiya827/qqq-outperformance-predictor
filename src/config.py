@@ -17,6 +17,7 @@ class Settings:
     project_root: Path
     raw_data_dir: Path
     processed_data_dir: Path
+    database_path: Path
 
 
 def get_settings() -> Settings:
@@ -37,6 +38,7 @@ def get_settings() -> Settings:
         project_root=PROJECT_ROOT,
         raw_data_dir=PROJECT_ROOT / "data" / "raw",
         processed_data_dir=PROJECT_ROOT / "data" / "processed",
+        database_path=PROJECT_ROOT / "data" / "qqq_predictor.db",
     )
 
 

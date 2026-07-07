@@ -439,6 +439,115 @@ Recording every experiment encourages reproducibility, simplifies model comparis
 
 ---
 
+# Current Implementation Status (Sprint 4)
+
+Sprint 4 introduces the initial SQLite database layer for the project.
+
+## Implemented Components
+
+The following modules have been added under `src/database/`:
+
+```text
+connection.py
+schema.py
+loaders.py
+queries.py
+```
+
+### connection.py
+
+Provides a centralized SQLite connection utility.
+
+Responsibilities include:
+
+- Creating database connections
+- Enabling SQLite foreign key support
+- Ensuring the database directory exists before connecting
+
+---
+
+### schema.py
+
+Responsible for initializing the project database schema.
+
+The initial implementation creates the `validated_prices` table, which stores cleaned historical market data produced by the validation pipeline.
+
+Future sprints will extend this module to create additional tables including:
+
+- stock_universe
+- raw_prices
+- features
+- labels
+- experiments
+
+---
+
+### loaders.py
+
+Provides utilities for importing validated CSV files into SQLite.
+
+Current functionality:
+
+- Read validated CSV files
+- Validate required columns
+- Insert records into `validated_prices`
+- Prevent duplicate records through primary key constraints
+
+Future versions may support incremental updates and bulk loading optimizations.
+
+---
+
+### queries.py
+
+Reserved for reusable SQL queries used by later stages of the machine learning pipeline.
+
+Examples include:
+
+- Retrieve historical prices
+- Load feature generation windows
+- Build training datasets
+- Generate experiment summaries
+
+---
+
+## Database Location
+
+The SQLite database is stored at:
+
+```text
+data/qqq_predictor.db
+```
+
+The location is configured centrally through `src/config.py`.
+
+---
+
+## Current Pipeline
+
+The data pipeline currently follows this architecture:
+
+```text
+Alpaca API
+      │
+      ▼
+Raw CSV Files
+      │
+      ▼
+Validation Pipeline
+      │
+      ▼
+Validated CSV Files
+      │
+      ▼
+SQLite Database
+      │
+      ▼
+Feature Engineering (next)
+```
+
+The database now serves as the persistence layer between data validation and feature engineering, reducing reliance on CSV files during downstream processing.
+
+
 # Future Evolution
 
 The database is intentionally designed to evolve over time.
