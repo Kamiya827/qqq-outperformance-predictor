@@ -69,6 +69,9 @@ The planned high-level architecture is shown below.
         Validation & Cleaning Pipeline
                      │
                      ▼
+        Validated Market Data (CSV)
+                     │
+                     ▼
               SQLite Database
                      │
       ┌──────────────┼──────────────┐
@@ -96,14 +99,17 @@ The repository is organized around functional responsibilities.
 src/
 │
 ├── data/
+├── database/
+├── evaluation/
 ├── features/
 ├── models/
+├── pipelines/
 ├── evaluation/
-├── visualization/
-└── utils/
+├── utils/
+└── visualization/
 ```
 
-Additional packages will be introduced as the project evolves, including a dedicated database layer.
+The repository is organized into modular packages, including dedicated database and pipeline layers that separate data ingestion, persistence, and downstream machine learning workflows.
 
 ---
 

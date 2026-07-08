@@ -58,7 +58,7 @@ The project follows several guiding principles throughout development.
 
 ### Status
 
-**Current Phase**
+**Complete**
 
 ---
 
@@ -182,19 +182,19 @@ Ongoing throughout the project
 
 # Current Sprint
 
-## Sprint 4 — Database Design
+## Sprint 5 — Feature Engineering
 
 ### Goal
 
-Design and implement a SQLite database that becomes the single source of truth for the entire machine learning pipeline.
+Generate reusable technical indicators and quantitative features directly from the SQLite database.
 
 ### Deliverables
 
-* Database schema
-* Database package
-* Database initialization script
-* Data loading pipeline
-* SQL query layer
+* Feature engineering module
+* Technical indicators
+* Rolling window features
+* Feature database table
+* Feature generation pipeline
 
 ---
 
@@ -210,19 +210,22 @@ Design and implement a SQLite database that becomes the single source of truth f
 * Historical data download pipeline
 * Data validation pipeline
 * Initial project documentation
+* SQLite database layer
+* Database schema initialization
+* Validated data loading pipeline
+* SQL query utilities
+* End-to-end data pipeline from raw CSV to SQLite
 
 ---
 
 # Next Milestones
 
-1. Design SQLite schema
-2. Create database layer
-3. Load validated market data
-4. Build SQL query interface
-5. Generate prediction labels
-6. Engineer features
-7. Perform exploratory data analysis
-8. Train baseline models
+1. Engineer technical features
+2. Generate prediction labels
+3. Perform exploratory data analysis
+4. Train baseline models
+5. Evaluate model performance
+6. Track experiments
 
 ---
 

@@ -499,14 +499,16 @@ Future versions may support incremental updates and bulk loading optimizations.
 
 ### queries.py
 
-Reserved for reusable SQL queries used by later stages of the machine learning pipeline.
+Provides reusable SQL query functions for downstream pipeline stages including feature engineering, label generation, and model training.
 
-Examples include:
+Current functionality includes:
 
-- Retrieve historical prices
-- Load feature generation windows
-- Build training datasets
-- Generate experiment summaries
+- Retrieve all validated prices
+- Retrieve prices for a specific ticker
+- Retrieve price history within a date range
+- List all available tickers
+
+Additional query utilities will be added as new pipeline stages are implemented.
 
 ---
 

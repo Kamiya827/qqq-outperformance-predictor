@@ -221,3 +221,7 @@ data/interim/*.csv
 
 # SQLite database
 data/*.db
+
+# macOS
+.DS_Store
+**/.DS_Store
