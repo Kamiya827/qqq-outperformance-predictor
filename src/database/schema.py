@@ -27,6 +27,35 @@ CREATE TABLE IF NOT EXISTS validated_prices (
 );
 """
 
+CREATE_FEATURES_TABLE = """
+CREATE TABLE IF NOT EXISTS features (
+
+    ticker TEXT NOT NULL,
+
+    timestamp TEXT NOT NULL,
+
+    return_1d REAL,
+
+    return_5d REAL,
+
+    sma_20 REAL,
+
+    sma_50 REAL,
+
+    ema_20 REAL,
+
+    volatility_20 REAL,
+
+    volume_ratio_20 REAL,
+
+    PRIMARY KEY (ticker, timestamp),
+
+    FOREIGN KEY (ticker, timestamp)
+        REFERENCES validated_prices (ticker, timestamp)
+
+);
+"""
+
 
 def initialize_database() -> None:
     """
@@ -36,5 +65,6 @@ def initialize_database() -> None:
     with get_connection() as connection:
 
         connection.execute(CREATE_VALIDATED_PRICES_TABLE)
+        connection.execute(CREATE_FEATURES_TABLE)
 
         connection.commit()
