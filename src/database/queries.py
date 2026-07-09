@@ -27,6 +27,14 @@ FEATURE_COLUMNS = [
     "volume_ratio_20",
 ]
 
+LABEL_COLUMNS = [
+    "ticker",
+    "timestamp",
+    "forward_return_5d",
+    "qqq_forward_return_5d",
+    "outperformed_qqq",
+]
+
 
 def _select_columns(columns: list[str]) -> str:
     return ",\n        ".join(columns)
@@ -130,6 +138,36 @@ def get_features_for_ticker(ticker: str) -> pd.DataFrame:
     SELECT
         {_select_columns(FEATURE_COLUMNS)}
     FROM features
+    WHERE ticker = ?
+    ORDER BY timestamp;
+    """
+
+    with get_connection() as connection:
+        return pd.read_sql_query(query, connection, params=(ticker.upper(),))
+    
+def get_all_labels() -> pd.DataFrame:
+    """
+    Return all generated label records.
+    """
+    query = f"""
+    SELECT
+        {_select_columns(LABEL_COLUMNS)}
+    FROM labels
+    ORDER BY ticker, timestamp;
+    """
+
+    with get_connection() as connection:
+        return pd.read_sql_query(query, connection)
+
+
+def get_labels_for_ticker(ticker: str) -> pd.DataFrame:
+    """
+    Return generated labels for one ticker.
+    """
+    query = f"""
+    SELECT
+        {_select_columns(LABEL_COLUMNS)}
+    FROM labels
     WHERE ticker = ?
     ORDER BY timestamp;
     """
