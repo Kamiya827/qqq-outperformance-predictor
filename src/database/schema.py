@@ -56,6 +56,27 @@ CREATE TABLE IF NOT EXISTS features (
 );
 """
 
+CREATE_LABELS_TABLE = """
+CREATE TABLE IF NOT EXISTS labels (
+
+    ticker TEXT NOT NULL,
+
+    timestamp TEXT NOT NULL,
+
+    forward_return_5d REAL,
+
+    qqq_forward_return_5d REAL,
+
+    outperformed_qqq INTEGER,
+
+    PRIMARY KEY (ticker, timestamp),
+
+    FOREIGN KEY (ticker, timestamp)
+        REFERENCES validated_prices (ticker, timestamp)
+
+);
+"""
+
 
 def initialize_database() -> None:
     """
@@ -66,5 +87,6 @@ def initialize_database() -> None:
 
         connection.execute(CREATE_VALIDATED_PRICES_TABLE)
         connection.execute(CREATE_FEATURES_TABLE)
-
+        connection.execute(CREATE_LABELS_TABLE)
+        
         connection.commit()
