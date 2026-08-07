@@ -74,13 +74,17 @@ The planned high-level architecture is shown below.
                      ▼
               SQLite Database
                      │
-      ┌──────────────┼──────────────┐
-      ▼              ▼              ▼
- SQL Queries    Feature Engineering  Label Generation
-      │              │              │
-      └──────────────┼──────────────┘
+      ┌──────────────┴──────────────┐
+      ▼                             ▼
+Feature Engineering          Label Generation
+      │                             │
+      ▼                             ▼
+ Features Table              Labels Table
+      └──────────────┬──────────────┘
                      ▼
-             Training Dataset (X, y)
+        Training Dataset Builder
+                     ▼
+        Model-Ready Dataset (X, y)
                      │
                      ▼
           Machine Learning Models

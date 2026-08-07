@@ -76,7 +76,7 @@ The project follows several guiding principles throughout development.
 
 ### Status
 
-Planned
+Complete
 
 ---
 
@@ -91,7 +91,7 @@ Planned
 
 ### Status
 
-Planned
+Complete
 
 ---
 
@@ -182,19 +182,20 @@ Ongoing throughout the project
 
 # Current Sprint
 
-## Sprint 5 — Feature Engineering
+## Sprint 6 - Baseline Machine Learning
 
 ### Goal
 
-Generate reusable technical indicators and quantitative features directly from the SQLite database.
+Build and evaluate the first machine learning models using the completed training dataset.
 
 ### Deliverables
 
-* Feature engineering module
-* Technical indicators
-* Rolling window features
-* Feature database table
-* Feature generation pipeline
+* Time-series train/test split
+* Logistic Regression baseline
+* Decision Tree baseline
+* Random Forest baseline
+* Model evaluation metrics
+* Experiment tracking preparation
 
 ---
 
@@ -215,17 +216,22 @@ Generate reusable technical indicators and quantitative features directly from t
 * Validated data loading pipeline
 * SQL query utilities
 * End-to-end data pipeline from raw CSV to SQLite
+* Feature engineering pipeline
+* Feature validation
+* Labels table
+* Label generation pipeline
+* Training dataset builder
 
 ---
 
 # Next Milestones
 
-1. Engineer technical features
-2. Generate prediction labels
-3. Perform exploratory data analysis
-4. Train baseline models
-5. Evaluate model performance
-6. Track experiments
+1. Perform exploratory data analysis
+2. Train baseline machine learning models
+3. Evaluate model performance
+4. Track experiments
+5. Document feature engineering
+6. Document modeling
 
 ---
 

@@ -439,7 +439,7 @@ Recording every experiment encourages reproducibility, simplifies model comparis
 
 ---
 
-# Current Implementation Status (Sprint 4)
+# Current Implementation Status (Sprint 5)
 
 Sprint 4 introduces the initial SQLite database layer for the project.
 
@@ -470,14 +470,14 @@ Responsibilities include:
 
 Responsible for initializing the project database schema.
 
-The initial implementation creates the `validated_prices` table, which stores cleaned historical market data produced by the validation pipeline.
-
-Future sprints will extend this module to create additional tables including:
-
-- stock_universe
-- raw_prices
+Current implementation creates the following tables:
+- validated_prices
 - features
 - labels
+
+Future sprints will extend the schema with additional tables including:
+- stock_universe
+- raw_prices
 - experiments
 
 ---
@@ -488,9 +488,10 @@ Provides utilities for importing validated CSV files into SQLite.
 
 Current functionality:
 
-- Read validated CSV files
-- Validate required columns
-- Insert records into `validated_prices`
+- Load validated market data into `validated_prices`
+- Load engineered features into `features`
+- Load prediction labels into `labels`
+- Validate required columns before insertion
 - Prevent duplicate records through primary key constraints
 
 Future versions may support incremental updates and bulk loading optimizations.
@@ -503,12 +504,14 @@ Provides reusable SQL query functions for downstream pipeline stages including f
 
 Current functionality includes:
 
-- Retrieve all validated prices
-- Retrieve prices for a specific ticker
-- Retrieve price history within a date range
-- List all available tickers
+- Retrieve validated price history
+- Retrieve engineered features
+- Retrieve prediction labels
+- Filter by ticker
+- Filter by date range
+- List available tickers
 
-Additional query utilities will be added as new pipeline stages are implemented.
+These reusable query functions are shared across the feature engineering, label generation, dataset builder, and machine learning pipelines.
 
 ---
 
@@ -543,8 +546,12 @@ Validated CSV Files
       ▼
 SQLite Database
       │
-      ▼
-Feature Engineering (next)
+  ┌───┴───────┐
+  ▼           ▼
+Features     Labels
+  └─────┬──────┘
+        ▼
+Training Dataset Builder
 ```
 
 The database now serves as the persistence layer between data validation and feature engineering, reducing reliance on CSV files during downstream processing.

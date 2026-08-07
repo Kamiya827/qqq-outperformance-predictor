@@ -44,12 +44,15 @@ Implemented:
 - SQLite database initialization
 - Validated data loading into SQLite
 - Reusable SQL query utilities
+- Feature engineering
+- Feature validation
+- Label generation
+- Training dataset builder
 
 Planned:
 
-- Feature engineering
-- Label generation
-- Model training
+- Exploratory data analysis
+- Machine learning models
 - Experiment tracking
 
 Each pipeline stage is intentionally independent so that datasets can be regenerated without modifying previous stages, supporting reproducibility and maintainability.
