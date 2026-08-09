@@ -48,6 +48,14 @@ CREATE TABLE IF NOT EXISTS features (
 
     volume_ratio_20 REAL,
 
+    price_to_sma_20 REAL,
+
+    price_to_sma_50 REAL,
+
+    price_to_ema_20 REAL,
+
+    sma_20_to_sma_50 REAL,
+
     PRIMARY KEY (ticker, timestamp),
 
     FOREIGN KEY (ticker, timestamp)

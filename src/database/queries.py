@@ -1,6 +1,7 @@
 import pandas as pd
 
 from src.database.connection import get_connection
+from src.features.schema import FEATURE_TABLE_COLUMNS
 
 
 PRICE_COLUMNS = [
@@ -13,18 +14,6 @@ PRICE_COLUMNS = [
     "volume",
     "trade_count",
     "vwap",
-]
-
-FEATURE_COLUMNS = [
-    "ticker",
-    "timestamp",
-    "return_1d",
-    "return_5d",
-    "sma_20",
-    "sma_50",
-    "ema_20",
-    "volatility_20",
-    "volume_ratio_20",
 ]
 
 LABEL_COLUMNS = [
@@ -121,7 +110,7 @@ def get_all_features() -> pd.DataFrame:
     """
     query = f"""
     SELECT
-        {_select_columns(FEATURE_COLUMNS)}
+        {_select_columns(FEATURE_TABLE_COLUMNS)}
     FROM features
     ORDER BY ticker, timestamp;
     """
@@ -136,7 +125,7 @@ def get_features_for_ticker(ticker: str) -> pd.DataFrame:
     """
     query = f"""
     SELECT
-        {_select_columns(FEATURE_COLUMNS)}
+        {_select_columns(FEATURE_TABLE_COLUMNS)}
     FROM features
     WHERE ticker = ?
     ORDER BY timestamp;

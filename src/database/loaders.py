@@ -3,6 +3,7 @@ from pathlib import Path
 import pandas as pd
 
 from src.database.connection import get_connection
+from src.features.schema import FEATURE_TABLE_COLUMNS
 
 
 REQUIRED_COLUMNS = {
@@ -86,53 +87,26 @@ def load_features(features: pd.DataFrame) -> int:
         Number of feature rows loaded.
     """
 
-    required_columns = {
-        "ticker",
-        "timestamp",
-        "return_1d",
-        "return_5d",
-        "sma_20",
-        "sma_50",
-        "ema_20",
-        "volatility_20",
-        "volume_ratio_20",
-    }
+    required_columns = set(FEATURE_TABLE_COLUMNS)
 
     missing_columns = required_columns - set(features.columns)
     if missing_columns:
         raise ValueError(f"Missing required feature columns: {missing_columns}")
 
-    feature_data = features[
-        [
-            "ticker",
-            "timestamp",
-            "return_1d",
-            "return_5d",
-            "sma_20",
-            "sma_50",
-            "ema_20",
-            "volatility_20",
-            "volume_ratio_20",
-        ]
-    ].copy()
+    feature_data = features[FEATURE_TABLE_COLUMNS].copy()
 
     feature_data["timestamp"] = feature_data["timestamp"].astype(str)
 
     rows = list(feature_data.itertuples(index=False, name=None))
 
-    insert_sql = """
+    column_names = ", ".join(FEATURE_TABLE_COLUMNS)
+    placeholders = ", ".join(["?"] * len(FEATURE_TABLE_COLUMNS))
+
+    insert_sql = f"""
     INSERT OR REPLACE INTO features (
-        ticker,
-        timestamp,
-        return_1d,
-        return_5d,
-        sma_20,
-        sma_50,
-        ema_20,
-        volatility_20,
-        volume_ratio_20
+        {column_names}
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+    VALUES ({placeholders});
     """
 
     with get_connection() as connection:

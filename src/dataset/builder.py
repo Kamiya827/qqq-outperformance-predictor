@@ -5,6 +5,7 @@ Build model-ready training datasets from engineered features and labels.
 import pandas as pd
 
 from src.database.queries import get_all_features, get_all_labels
+from src.features.schema import FEATURE_COLUMNS
 
 IDENTIFIER_COLUMNS = ["ticker", "timestamp"]
 

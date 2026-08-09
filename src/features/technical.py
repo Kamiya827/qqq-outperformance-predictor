@@ -6,6 +6,7 @@ Features must only use information available at or before each timestamp.
 """
 
 import pandas as pd
+from src.features.schema import FEATURE_TABLE_COLUMNS
 
 
 def add_return_features(df: pd.DataFrame) -> pd.DataFrame:
@@ -40,6 +41,19 @@ def add_moving_average_features(df: pd.DataFrame) -> pd.DataFrame:
         features.groupby("ticker")["close"]
         .transform(lambda x: x.ewm(span=20, adjust=False).mean())
     )
+
+    return features
+
+def add_relative_trend_features(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Add price-relative trend features derived from moving averages.
+    """
+    features = df.copy()
+
+    features["price_to_sma_20"] = features["close"] / features["sma_20"] - 1
+    features["price_to_sma_50"] = features["close"] / features["sma_50"] - 1
+    features["price_to_ema_20"] = features["close"] / features["ema_20"] - 1
+    features["sma_20_to_sma_50"] = features["sma_20"] / features["sma_50"] - 1
 
     return features
 
@@ -95,19 +109,9 @@ def build_technical_features(df: pd.DataFrame) -> pd.DataFrame:
 
     features = add_return_features(features)
     features = add_moving_average_features(features)
+    features = add_relative_trend_features(features)
     features = add_volatility_features(features)
     features = add_volume_features(features)
 
-    feature_columns = [
-        "ticker",
-        "timestamp",
-        "return_1d",
-        "return_5d",
-        "sma_20",
-        "sma_50",
-        "ema_20",
-        "volatility_20",
-        "volume_ratio_20",
-    ]
 
-    return features[feature_columns]
+    return features[FEATURE_TABLE_COLUMNS]
