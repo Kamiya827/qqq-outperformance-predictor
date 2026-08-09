@@ -1,6 +1,6 @@
 from src.dataset.builder import build_training_dataset
 from src.models.baseline import build_logistic_regression
-from src.models.evaluate import evaluate_binary_classifier
+from src.evaluation.metrics import evaluate_binary_classifier
 from src.models.preprocess import (
     prepare_features_and_labels,
     standardize_features,
