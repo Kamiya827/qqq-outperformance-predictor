@@ -13,6 +13,7 @@ from src.features.schema import (
     BASE_FEATURE_COLUMNS,
     FEATURE_COLUMNS,
     RELATIVE_TREND_FEATURE_COLUMNS,
+    STATIONARY_FEATURE_COLUMNS,
 )
 from src.models.baseline import (
     build_decision_tree,
@@ -33,6 +34,10 @@ def main() -> None:
         {
             "name": "Relative Trend",
             "columns": RELATIVE_TREND_FEATURE_COLUMNS,
+        },
+        {
+            "name": "Stationary",
+            "columns": STATIONARY_FEATURE_COLUMNS,
         },
         {
             "name": "Combined",
