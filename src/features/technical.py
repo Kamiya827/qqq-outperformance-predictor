@@ -6,7 +6,7 @@ Features must only use information available at or before each timestamp.
 """
 
 import pandas as pd
-from src.features.schema import FEATURE_TABLE_COLUMNS
+from src.features.schema import TECHNICAL_FEATURE_TABLE_COLUMNS
 
 
 def add_return_features(df: pd.DataFrame) -> pd.DataFrame:
@@ -114,4 +114,4 @@ def build_technical_features(df: pd.DataFrame) -> pd.DataFrame:
     features = add_volume_features(features)
 
 
-    return features[FEATURE_TABLE_COLUMNS]
+    return features[TECHNICAL_FEATURE_TABLE_COLUMNS]

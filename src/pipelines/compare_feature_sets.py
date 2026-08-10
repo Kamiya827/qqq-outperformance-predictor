@@ -14,6 +14,7 @@ from src.features.schema import (
     FEATURE_COLUMNS,
     RELATIVE_TREND_FEATURE_COLUMNS,
     STATIONARY_FEATURE_COLUMNS,
+    BENCHMARK_RELATIVE_FEATURE_COLUMNS
 )
 from src.models.baseline import (
     build_decision_tree,
@@ -34,6 +35,10 @@ def main() -> None:
         {
             "name": "Relative Trend",
             "columns": RELATIVE_TREND_FEATURE_COLUMNS,
+        },
+        {
+            "name": "Benchmark Relative",
+            "columns": BENCHMARK_RELATIVE_FEATURE_COLUMNS,
         },
         {
             "name": "Stationary",

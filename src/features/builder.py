@@ -6,7 +6,8 @@ import pandas as pd
 
 from src.database.queries import get_all_prices
 from src.features.technical import build_technical_features
-
+from src.features.relative import add_benchmark_relative_features
+from src.features.schema import FEATURE_TABLE_COLUMNS
 
 def build_features() -> pd.DataFrame:
     """
@@ -25,4 +26,9 @@ def build_features() -> pd.DataFrame:
 
     features = build_technical_features(prices)
 
-    return features
+    features = add_benchmark_relative_features(
+        features,
+        benchmark_ticker="QQQ",
+    )
+
+    return features[FEATURE_TABLE_COLUMNS]

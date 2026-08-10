@@ -56,6 +56,12 @@ CREATE TABLE IF NOT EXISTS features (
 
     sma_20_to_sma_50 REAL,
 
+    relative_return_1d REAL,
+
+    relative_return_5d REAL,
+
+    relative_volatility_20 REAL,
+
     PRIMARY KEY (ticker, timestamp),
 
     FOREIGN KEY (ticker, timestamp)
