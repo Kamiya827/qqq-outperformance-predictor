@@ -11,6 +11,8 @@ from alpaca.data.timeframe import TimeFrame
 from src.config import settings
 from src.data.client import get_client
 
+from src.data.universe import get_tickers
+
 
 def download_daily_bars(
     tickers: list[str],
@@ -44,7 +46,7 @@ def download_daily_bars(
 
 
 if __name__ == "__main__":
-    tickers = ["AAPL", "QQQ"]
+    tickers = get_tickers(include_benchmark=True)
 
     data = download_daily_bars(
         tickers=tickers,
@@ -52,7 +54,7 @@ if __name__ == "__main__":
         end=datetime(2025, 12, 31),
     )
 
-    output_path = settings.raw_data_dir / "daily_bars_starter.csv"
+    output_path = settings.raw_data_dir / "daily_bars.csv"
     data.to_csv(output_path, index=False)
 
     print(f"Saved {len(data):,} rows to {output_path}")

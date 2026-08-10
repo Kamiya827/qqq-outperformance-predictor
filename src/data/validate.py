@@ -5,7 +5,7 @@ Validate and clean raw historical price data.
 import pandas as pd
 
 from src.config import settings
-
+from src.data.universe import get_tickers
 
 RAW_REQUIRED_COLUMNS = {
     "symbol",
@@ -186,12 +186,14 @@ def clean_price_data(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def main() -> None:
-    input_path = settings.raw_data_dir / "daily_bars_starter.csv"
+    input_path = settings.raw_data_dir / "daily_bars.csv"
     output_path = settings.project_root / "data" / "interim" / "daily_bars_validated.csv"
+
+    expected_tickers = get_tickers(include_benchmark=True)
 
     raw = pd.read_csv(input_path)
 
-    before_report = validate_raw_price_data(raw, expected_tickers=["AAPL", "QQQ"])
+    before_report = validate_raw_price_data(raw, expected_tickers=expected_tickers)
     print("Validation report before cleaning:")
     print(before_report)
 
@@ -200,7 +202,7 @@ def main() -> None:
 
     cleaned = clean_price_data(raw)
 
-    after_report = validate_clean_price_data(cleaned, expected_tickers=["AAPL", "QQQ"])
+    after_report = validate_clean_price_data(cleaned, expected_tickers=expected_tickers)
     print("\nValidation report after cleaning:")
     print(after_report)
 
