@@ -18,6 +18,7 @@ def cross_validate_model(
     dataset: pd.DataFrame,
     model_builder: Callable,
     model_name: str,
+    feature_columns: list[str] | None = None,
     scale_features: bool = False,
     n_splits: int = 5,
     gap: int = 5,
@@ -33,6 +34,8 @@ def cross_validate_model(
         Function that returns a new unfitted model.
     model_name : str
         Human-readable model name.
+    feature_columns: list[str] | None
+        Feature columns to use for model training.
     scale_features : bool
         Whether feature standardization is required.
     n_splits : int
@@ -54,8 +57,15 @@ def cross_validate_model(
     fold_results = []
 
     for fold_number, (train, validation) in enumerate(folds, start=1):
-        X_train, y_train = prepare_features_and_labels(train)
-        X_validation, y_validation = prepare_features_and_labels(validation)
+        X_train, y_train = prepare_features_and_labels(
+             train,
+             feature_columns = feature_columns
+        )
+
+        X_validation, y_validation = prepare_features_and_labels(
+             validation,
+             feature_columns=feature_columns
+        )
 
         if scale_features:
             X_train, X_validation, _ = standardize_features(

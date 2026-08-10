@@ -6,6 +6,7 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
 from src.dataset.builder import LABEL_COLUMN
+from src.features.schema import FEATURE_COLUMNS
 
 
 NON_FEATURE_COLUMNS = [
@@ -19,9 +20,10 @@ NON_FEATURE_COLUMNS = [
 
 def prepare_features_and_labels(
     dataset: pd.DataFrame,
+    feature_columns: list[str] | None = None,
 ) -> tuple[pd.DataFrame, pd.Series]:
     """
-    Split a model-ready dataset into model features and target labels.
+    Split a model-ready dataset into selected model features and target labels.
     """
     missing_columns = set(NON_FEATURE_COLUMNS) - set(dataset.columns)
     if missing_columns:
@@ -29,7 +31,16 @@ def prepare_features_and_labels(
             f"Dataset is missing required columns: {missing_columns}"
         )
 
-    X = dataset.drop(columns=NON_FEATURE_COLUMNS)
+    if feature_columns is None:
+        feature_columns = FEATURE_COLUMNS
+
+    missing_features = set(feature_columns) - set(dataset.columns)
+    if missing_features:
+        raise ValueError(
+            f"Dataset is missing requested feature columns: {missing_features}"
+        )
+
+    X = dataset[feature_columns].copy()
     y = dataset[LABEL_COLUMN]
 
     return X, y
