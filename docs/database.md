@@ -61,9 +61,9 @@ Derived information is stored separately.
 
 ---
 
-# Planned Database Tables
+# Database Tables
 
-The database will contain the following primary tables.
+The database architecture includes the following primary tables.
 
 ```text
 stock_universe
@@ -74,7 +74,9 @@ labels
 experiments
 ```
 
-A SQL view will later combine features and labels into a model-ready training dataset.
+The current implementation includes `validated_prices`, `features`, and `labels`.
+
+The model-ready training dataset is constructed dynamically by joining features and labels in the application layer rather than being stored as a separate database table or SQL view.
 
 ---
 
@@ -104,18 +106,31 @@ A SQL view will later combine features and labels into a model-ready training da
               ┌───────────┴────────────┐
               ▼                        ▼
          features                  labels
-    ┌────────────────┐      ┌────────────────────┐
-    │ ticker         │      │ ticker             │
-    │ timestamp      │      │ timestamp          │
-    │ engineered     │      │ forward_return_5d │
-    │ features...    │      │ qqq_return_5d      │
-    └────────┬───────┘      │ outperformed_qqq   │
-             │              └─────────┬──────────┘
-             └──────────────┬─────────┘
+    ┌────────────────┐      ┌───────────────────────┐
+    │ ticker         │      │ ticker                │
+    │ timestamp      │      │ timestamp             │
+    │ 14 engineered  │      │ forward_return_5d     │
+    │ features       │      │ qqq_forward_return_5d │
+    └────────┬───────┘      │ outperformed_qqq      │
+             │              └───────────┬───────────┘
+             └──────────────┬───────────┘
                             ▼
-                 training_dataset (VIEW)
-
-                   experiments
+                   training_dataset
+                   ──────────────────
+                   Derived dynamically
+                   from features + labels
+                            │
+                            ▼
+                    Machine Learning
+                            │
+                            ▼
+                       experiments
+                      ─────────────
+                      experiment_id
+                      model_name
+                      feature_set
+                      hyperparameters
+                      evaluation metrics
 ```
 
 ---
@@ -196,7 +211,7 @@ Validation may include:
 
 The schema intentionally mirrors `raw_prices` so validated data can easily replace raw data in downstream processing.
 
-### Planned Columns
+### Current Columns
 
 | Column      | Type    |
 | ----------- | ------- |
@@ -216,6 +231,10 @@ The schema intentionally mirrors `raw_prices` so validated data can easily repla
 (ticker, timestamp)
 ```
 
+The current validated market dataset contains 11 symbols: ten modeled stocks and QQQ as the benchmark.
+
+The table contains 11,022 validated price observations covering 2022 through 2025.
+
 ---
 
 ## features
@@ -226,32 +245,46 @@ Stores engineered features used by machine learning models.
 
 Separating engineered features from historical prices allows feature generation to evolve without modifying validated market data.
 
-### Example Features
+### Current Features
 
-| Feature                  |
-| ------------------------ |
-| return_1d                |
-| return_5d                |
-| SMA_20                   |
-| SMA_50                   |
-| EMA_20                   |
-| RSI_14                   |
-| MACD                     |
-| ATR                      |
-| Bollinger Bands          |
-| Volatility               |
-| Volume Ratio             |
-| Relative Strength vs QQQ |
+The current feature set contains 14 engineered features across three feature families.
 
-### Planned Columns
+#### Base Features
 
 ```text
-ticker
-timestamp
-feature_name...
+return_1d
+return_5d
+sma_20
+sma_50
+ema_20
+volatility_20
+volume_ratio_20
 ```
 
-The exact feature schema will evolve as additional indicators are implemented.
+#### Relative Trend Features
+
+```text
+price_to_sma_20
+price_to_sma_50
+price_to_ema_20
+sma_20_to_sma_50
+```
+
+#### Benchmark-Relative Features
+
+```text
+relative_return_1d
+relative_return_5d
+relative_volatility_20
+```
+
+Benchmark-relative features compare each stock's behavior with QQQ, aligning the feature set more directly with the project's objective of predicting benchmark outperformance.
+
+Feature definitions are centralized in:
+
+```text
+src/features/schema.py
+```
 
 ### Primary Key
 
@@ -269,7 +302,7 @@ Stores the supervised learning target.
 
 The label indicates whether a stock outperformed QQQ over the following five trading days.
 
-### Planned Columns
+### Current Columns
 
 | Column                | Type    |
 | --------------------- | ------- |
@@ -283,6 +316,15 @@ The label indicates whether a stock outperformed QQQ over the following five tra
 
 ```text
 (ticker, timestamp)
+```
+
+The binary target is defined as:
+
+```text
+outperformed_qqq = 1 if the stock's five-day forward return
+                   exceeds QQQ's five-day forward return
+
+outperformed_qqq = 0 otherwise
 ```
 
 ---
@@ -317,17 +359,21 @@ Each row represents one model training run.
 | hypothesis       | TEXT                              |
 | conclusion       | TEXT                              |
 
+The exact experiment schema may evolve as the experiment tracking layer is implemented.
+
 ---
 
-# Planned Training Dataset View
+# Training Dataset Construction
 
-Rather than physically storing the final machine learning dataset, the project will create a SQL view that joins engineered features with prediction labels.
+Rather than physically storing the final machine learning dataset, the project dynamically joins engineered features with prediction labels.
 
 Conceptually:
 
 ```sql
 SELECT
     f.*,
+    l.forward_return_5d,
+    l.qqq_forward_return_5d,
     l.outperformed_qqq
 FROM features AS f
 JOIN labels AS l
@@ -335,7 +381,19 @@ JOIN labels AS l
    AND f.timestamp = l.timestamp;
 ```
 
-This approach avoids duplicating data while providing a model-ready dataset.
+The current dataset builder performs this join in the application layer, removes observations with incomplete features or labels, and excludes QQQ from the prediction universe.
+
+With the current ten-stock modeling universe, the resulting model-ready dataset contains:
+
+```text
+10 modeled stocks
+948 observations per stock
+9,480 total observations
+```
+
+This approach avoids duplicating data while providing a reproducible model-ready dataset.
+
+A SQL view could be introduced later if it provides a practical advantage.
 
 ---
 
@@ -425,6 +483,23 @@ Features represent information available at prediction time, while labels depend
 
 ## Decision
 
+Construct the training dataset dynamically.
+
+### Alternatives Considered
+
+- Persist the training dataset as a separate table
+- Create a permanent SQL view
+
+### Reasoning
+
+The training dataset is derived entirely from the `features` and `labels` tables. Constructing it dynamically avoids unnecessary data duplication and allows changes to feature engineering or label generation to flow naturally into model training.
+
+A SQL view remains a possible future improvement if it simplifies downstream workflows.
+
+---
+
+## Decision
+
 Track machine learning experiments in the database.
 
 ### Alternatives Considered
@@ -439,9 +514,9 @@ Recording every experiment encourages reproducibility, simplifies model comparis
 
 ---
 
-# Current Implementation Status (Sprint 5)
+# Current Implementation Status
 
-Sprint 4 introduces the initial SQLite database layer for the project.
+The SQLite database layer is implemented and now supports feature engineering, label generation, training dataset construction, and downstream machine learning workflows.
 
 ## Implemented Components
 
@@ -471,20 +546,24 @@ Responsibilities include:
 Responsible for initializing the project database schema.
 
 Current implementation creates the following tables:
-- validated_prices
-- features
-- labels
 
-Future sprints will extend the schema with additional tables including:
-- stock_universe
-- raw_prices
-- experiments
+- `validated_prices`
+- `features`
+- `labels`
+
+The feature schema has been extended as feature engineering has evolved, including support for relative trend and benchmark-relative features.
+
+Future development may extend the schema with additional tables including:
+
+- `stock_universe`
+- `raw_prices`
+- `experiments`
 
 ---
 
 ### loaders.py
 
-Provides utilities for importing validated CSV files into SQLite.
+Provides utilities for importing validated and derived datasets into SQLite.
 
 Current functionality:
 
@@ -552,10 +631,17 @@ Features     Labels
   └─────┬──────┘
         ▼
 Training Dataset Builder
+        │
+        ▼
+Time-Series Validation
+        │
+        ▼
+Machine Learning Models
 ```
 
-The database now serves as the persistence layer between data validation and feature engineering, reducing reliance on CSV files during downstream processing.
+The database now serves as the persistence layer between data validation and downstream machine learning workflows, reducing reliance on CSV files after ingestion.
 
+---
 
 # Future Evolution
 
