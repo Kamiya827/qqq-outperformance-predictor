@@ -22,10 +22,13 @@ from src.models.baseline import (
     build_logistic_regression,
     build_random_forest,
 )
+from src.database.experiments import log_experiment
 
 
 def main() -> None:
     dataset = build_training_dataset()
+    n_splits = 5
+    gap = 5
 
     feature_sets = [
         {
@@ -83,9 +86,28 @@ def main() -> None:
                 model_name=model_config["name"],
                 feature_columns=feature_set["columns"],
                 scale_features=model_config["scale_features"],
+                n_splits=n_splits,
+                gap=gap
             )
 
             summary = summarize_cross_validation(results)
+
+            experiment_id = log_experiment(
+                experiment_type="feature_ablation",
+                model_name=model_config["name"],
+                feature_set=feature_set["name"],
+                feature_count=len(feature_set["columns"]),
+                dataset_rows=len(dataset),
+                dataset_tickers=dataset["ticker"].nunique(),
+                n_splits=n_splits,
+                gap=gap,
+                summary=summary,
+            )
+
+            print(
+                f"Logged experiment ID {experiment_id}: "
+                f"{feature_set['name']} + {model_config['name']}"
+            )
 
             comparison_rows.append(
                 {

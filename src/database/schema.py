@@ -91,6 +91,54 @@ CREATE TABLE IF NOT EXISTS labels (
 );
 """
 
+CREATE_EXPERIMENTS_TABLE = """
+CREATE TABLE IF NOT EXISTS experiments (
+
+    experiment_id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    run_timestamp TEXT NOT NULL,
+
+    experiment_type TEXT NOT NULL,
+
+    model_name TEXT NOT NULL,
+
+    feature_set TEXT NOT NULL,
+
+    feature_count INTEGER NOT NULL,
+
+    dataset_rows INTEGER NOT NULL,
+
+    dataset_tickers INTEGER NOT NULL,
+
+    n_splits INTEGER NOT NULL,
+
+    gap INTEGER NOT NULL,
+
+    accuracy_mean REAL,
+
+    accuracy_std REAL,
+
+    precision_mean REAL,
+
+    precision_std REAL,
+
+    recall_mean REAL,
+
+    recall_std REAL,
+
+    f1_mean REAL,
+
+    f1_std REAL,
+
+    roc_auc_mean REAL,
+
+    roc_auc_std REAL,
+
+    hypothesis TEXT,
+
+    conclusion TEXT
+);
+"""
 
 def initialize_database() -> None:
     """
@@ -102,5 +150,6 @@ def initialize_database() -> None:
         connection.execute(CREATE_VALIDATED_PRICES_TABLE)
         connection.execute(CREATE_FEATURES_TABLE)
         connection.execute(CREATE_LABELS_TABLE)
-        
+        connection.execute(CREATE_EXPERIMENTS_TABLE)
+
         connection.commit()

@@ -15,10 +15,13 @@ from src.models.baseline import (
     build_logistic_regression,
     build_random_forest,
 )
-
+from src.database.experiments import log_experiment
+from src.features.schema import FEATURE_COLUMNS
 
 def main() -> None:
     dataset = build_training_dataset()
+    n_splits = 5
+    gap = 5
 
     model_configs = [
         {
@@ -51,9 +54,25 @@ def main() -> None:
             model_builder=config["builder"],
             model_name=config["name"],
             scale_features=config["scale_features"],
+            n_splits=n_splits,
+            gap=gap,
         )
 
         summary = summarize_cross_validation(results)
+
+        experiment_id = log_experiment(
+            experiment_type="baseline_comparison",
+            model_name=config["name"],
+            feature_set="Combined",
+            feature_count=len(FEATURE_COLUMNS),
+            dataset_rows=len(dataset),
+            dataset_tickers=dataset["ticker"].nunique(),
+            n_splits=n_splits,
+            gap=gap,
+            summary=summary,
+        )
+
+        print(f"Logged experiment ID: {experiment_id}")
 
         print(f"\n{config['name']}")
         print("-" * 30)
